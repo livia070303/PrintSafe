@@ -1,8 +1,17 @@
-const API =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1"
-    ? "http://localhost:8080"
-    : "";
+function getApiBase() {
+  // Dev: Vite encaminha /api → http://localhost:8080 (vite.config.js)
+  if (import.meta.env.DEV) {
+    return "";
+  }
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1") {
+    return "http://localhost:8080";
+  }
+  // ESP32 / produção: mesma origem
+  return "";
+}
+
+const API = getApiBase();
 
 async function request(path, options = {}) {
   const response = await fetch(`${API}${path}`, {
@@ -26,6 +35,23 @@ async function request(path, options = {}) {
 }
 
 export const getSensorData = () => request("/api/data");
+
+export const postComando = (cmd, valor) =>
+  request("/api/comando", {
+    method: "POST",
+    body: JSON.stringify(
+      valor === undefined ? { cmd } : { cmd, valor }
+    ),
+  });
+
+export const setPesoMax = (pesoMaximo) =>
+  request("/api/pesomax", {
+    method: "POST",
+    body: JSON.stringify({ pesoMaximo }),
+  });
+
+export const tarar = () =>
+  request("/api/tara", { method: "POST", body: "{}" });
 
 export const getCalibration = () => request("/api/calibration");
 export const saveCalibration = (data) =>

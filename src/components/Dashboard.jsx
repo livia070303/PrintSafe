@@ -40,9 +40,15 @@ export default function Dashboard() {
         />
 
         <SensorCard 
-          title="Peso do filamento" 
-          value={data.weight} 
-          unit="g" 
+          title="Setpoint" 
+          value={data.temperature} 
+          unit="°C" 
+        />
+
+        <SensorCard 
+          title="Validade" 
+          value={data.validity} 
+          unit="dias" 
         />
 
       </div>

@@ -20,7 +20,6 @@ export default function Header({ title = "🖨️ PRINTSENSE", dashboard = false
 
         {dashboard ? (
           <>
-            <Link className="btn btn-primary" to="/calibration">🧪 Calibração</Link>
             <Link className="btn btn-primary" to="/config">⚙️ Configuração</Link>
             <Link className="btn btn-primary" to="/about">ℹ️ Sobre</Link>
           </>

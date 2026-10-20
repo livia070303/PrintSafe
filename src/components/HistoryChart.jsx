@@ -41,13 +41,13 @@ export default function HistoryChart({ history }) {
         backgroundColor: "rgba(0,255,136,.15)",
         tension: 0.35,
       },
-      {
-        label: "Peso do filamento",
-        data: history.map((item) => item.weight),
-        borderColor: "#ffd700",
-        backgroundColor: "rgba(255,215,0,.15)",
-        tension: 0.35,
-      },
+      // {
+      //   label: "Peso do filamento",
+      //   data: history.map((item) => item.weight),
+      //   borderColor: "#ffd700",
+      //   backgroundColor: "rgba(255,215,0,.15)",
+      //   tension: 0.35,
+      // },
     ],
   };
 
