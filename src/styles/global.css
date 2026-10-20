@@ -186,6 +186,10 @@ body.light-mode .app-header {
   gap: 4px;
 }
 
+body.light-mode .button-status {
+  color: #000;
+}
+
 .button-status.active {
   border-color: var(--secondary);
   background: rgba(0, 255, 136, 0.15);

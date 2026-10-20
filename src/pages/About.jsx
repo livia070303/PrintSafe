@@ -31,8 +31,8 @@ export default function About() {
             histórico e indicadores de qualidade.
           </p>
           <p>
-            O sistema permite selecionar diferentes materiais, como PLA, ABS,
-            PETG e Resina, ajustando os parâmetros ideais para cada situação.
+            O sistema permite selecionar diferentes materiais, como PLA, PETG, ABS, NYLON e
+            TPU, ajustando os parâmetros ideais para cada situação.
           </p>
         </section>
 
