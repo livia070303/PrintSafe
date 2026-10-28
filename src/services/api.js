@@ -53,29 +53,9 @@ export const setPesoMax = (pesoMaximo) =>
 export const tarar = () =>
   request("/api/tara", { method: "POST", body: "{}" });
 
-export const getCalibration = () => request("/api/calibration");
-export const saveCalibration = (data) =>
-  request("/api/calibration", {
+// Calibra a balança com um peso conhecido colocado sobre ela (rota /api/calibrar do firmware)
+export const calibrar = (pesoReferencia) =>
+  request("/api/calibrar", {
     method: "POST",
-    body: JSON.stringify(data),
-  });
-
-export const getConfig = () => request("/api/config");
-export const saveConfig = (data) =>
-  request("/api/config", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-
-export const getSystem = () => request("/api/system");
-export const saveSystem = (data) =>
-  request("/api/system", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-
-export const saveMaterial = (data) =>
-  request("/api/material", {
-    method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify({ pesoReferencia }),
   });

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { setPesoMax, tarar } from "../services/api";
+import { calibrar, setPesoMax, tarar } from "../services/api";
 import { useDialog } from "../context/DialogContext";
 
 function badgeForPct(pct, mx) {
@@ -17,6 +17,7 @@ export default function BalancaCard({
   onRefresh,
 }) {
   const [maxInput, setMaxInput] = useState("");
+  const [refInput, setRefInput] = useState("");
   const { showAlert, showConfirm } = useDialog();
 
   const g = Math.max(0, Number(pesoAtual) || 0);
@@ -74,6 +75,40 @@ export default function BalancaCard({
     }
   }
 
+  async function fazerCalibracao() {
+    const ref = parseFloat(refInput);
+    if (!ref || ref <= 0 || ref > 5000) {
+      await showAlert("Informe o peso de referência entre 1 e 5000 gramas.", {
+        variant: "warning",
+        title: "Peso inválido",
+      });
+      return;
+    }
+    const ok = await showConfirm(
+      `Faça a tara com a balança vazia antes. Depois, coloque um objeto de ${ref} g sobre a balança e confirme.`,
+      {
+        title: "Calibrar balança",
+        icon: "⚖️",
+        confirmLabel: "Calibrar agora",
+        cancelLabel: "Cancelar",
+      }
+    );
+    if (!ok) return;
+    try {
+      await calibrar(ref);
+      setRefInput("");
+      await onRefresh?.();
+      await showAlert("Balança calibrada com sucesso.", {
+        variant: "success",
+        title: "Calibração concluída",
+      });
+    } catch {
+      await showAlert("Não foi possível calibrar a balança.", {
+        variant: "error",
+      });
+    }
+  }
+
   return (
     <div className="card balanca-card">
       <div className="balanca-header">
@@ -125,6 +160,25 @@ export default function BalancaCard({
             />
             <button type="button" className="btn btn-amber" onClick={definirMax}>
               Definir
+            </button>
+          </div>
+        </div>
+
+        <div className="balanca-input-group">
+          <label htmlFor="bal-inp-ref">Peso de referência (g)</label>
+          <div className="balanca-input-row">
+            <input
+              id="bal-inp-ref"
+              type="number"
+              className="balanca-input"
+              placeholder="ex: 200"
+              min={1}
+              max={5000}
+              value={refInput}
+              onChange={(e) => setRefInput(e.target.value)}
+            />
+            <button type="button" className="btn btn-amber" onClick={fazerCalibracao}>
+              Calibrar
             </button>
           </div>
         </div>

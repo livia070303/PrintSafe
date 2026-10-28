@@ -4,7 +4,7 @@ import MetricCard from "../components/MetricCard";
 import HistoryChart from "../components/HistoryChart";
 import BalancaCard from "../components/BalancaCard";
 import ControlsPanel from "../components/ControlsPanel";
-import { DEFAULT_LIMITS } from "../constants/filament";
+import { PERFIS, FOLGA_TEMP, FOLGA_UMID } from "../constants/filament";
 import { useEstufaControls } from "../hooks/useEstufaControls";
 
 function formatTempoRestante(minutes) {
@@ -18,7 +18,8 @@ function checkRange(value, min, max) {
   return value >= min && value <= max;
 }
 
-function badge(ok) {
+function badge(ok, ativo) {
+  if (!ativo) return { status: "—", statusClass: "ok" };
   return ok
     ? { status: "OK", statusClass: "ok" }
     : { status: "FORA", statusClass: "error" };
@@ -35,7 +36,7 @@ export default function Dashboard() {
     ...controls
   } = useEstufaControls();
 
-  const limits = DEFAULT_LIMITS[material] ?? DEFAULT_LIMITS.PLA;
+  const perfil = PERFIS[material] ?? PERFIS.PLA;
 
   const values = useMemo(() => {
     if (!sensor) {
@@ -60,10 +61,18 @@ export default function Dashboard() {
     }));
   }, [sensor]);
 
+  const modoSecagem =
+    String(sensor?.modo ?? "").toLowerCase() === "secagem";
+
+  // Faixas de referência seguem o modo atual (secagem ou armazenamento),
+  // usando o setpoint enviado pelo firmware e a umidade alvo do material.
+  const tempMin = values.setpoint - FOLGA_TEMP;
+  const tempMax = values.setpoint + FOLGA_TEMP;
+  const umidMax = perfil.umidadeAlvo + FOLGA_UMID;
+
   const states = {
-    temperature: checkRange(values.temperature, limits.tempMin, limits.tempMax),
-    humidity: checkRange(values.humidity, limits.humMin, limits.humMax),
-    setpoint: checkRange(values.setpoint, limits.tempMin, limits.tempMax),
+    temperature: checkRange(values.temperature, tempMin, tempMax),
+    humidity: values.humidity <= umidMax,
   };
 
   const allOk = Object.values(states).every(Boolean);
@@ -73,6 +82,12 @@ export default function Dashboard() {
         details: "Aguarde enquanto coletamos dados dos sensores",
         className: "ideal",
       }
+    : !ativo
+      ? {
+          title: "SISTEMA DESLIGADO",
+          details: `Material selecionado: ${material}`,
+          className: "ideal",
+        }
     : allOk
       ? {
           title: "AMBIENTE IDEAL",
@@ -85,8 +100,6 @@ export default function Dashboard() {
           className: "ruim",
         };
 
-  const modoSecagem =
-    String(sensor?.modo ?? "").toLowerCase() === "secagem";
   const tempoRestante = Number(sensor?.tempoRestante ?? 0);
   const resistencia = !!sensor?.resistencia;
   const ventoinha = !!sensor?.ventoinha;
@@ -108,22 +121,23 @@ export default function Dashboard() {
             icon="🌡️"
             label="Temperatura"
             value={sensor ? `${values.temperature.toFixed(1)} °C` : "--"}
-            range={`Ideal: ${limits.tempMin}–${limits.tempMax} °C`}
-            {...badge(states.temperature)}
+            range={sensor ? `Ideal: ${tempMin.toFixed(0)}–${tempMax.toFixed(0)} °C` : "--"}
+            {...badge(states.temperature, ativo)}
           />
           <MetricCard
             icon="💧"
             label="Umidade"
             value={sensor ? `${values.humidity.toFixed(1)} %` : "--"}
-            range={`Ideal: ${limits.humMin}–${limits.humMax} %`}
-            {...badge(states.humidity)}
+            range={`Ideal: até ${umidMax} %`}
+            {...badge(states.humidity, ativo)}
           />
           <MetricCard
             icon="🎯"
             label="Setpoint"
             value={sensor ? `${values.setpoint.toFixed(1)} °C` : "--"}
-            range={`Ideal: ${limits.tempMin}–${limits.tempMax} °C`}
-            {...badge(states.setpoint)}
+            range={`Secagem ${perfil.tempSecagem} °C · Armaz. ${perfil.tempArmazenamento} °C`}
+            status={modoSecagem ? "SECAGEM" : "ARMAZ."}
+            statusClass="ok"
           />
           <MetricCard
             icon="📅"

@@ -1,47 +1,19 @@
 export const MATERIALS = ["PLA", "PETG", "ABS", "NYLON", "TPU"];
 
-export const DEFAULT_LIMITS = {
-  PLA: {
-    tempMin: 18,
-    tempMax: 28,
-    humMin: 40,
-    humMax: 60,
-    lightMax: 3000,
-    soundMaxDB: 70,
-  },
-  PETG: {
-    tempMin: 20,
-    tempMax: 30,
-    humMin: 30,
-    humMax: 50,
-    lightMax: 3000,
-    soundMaxDB: 70,
-  },
-  ABS: {
-    tempMin: 22,
-    tempMax: 32,
-    humMin: 20,
-    humMax: 40,
-    lightMax: 3000,
-    soundMaxDB: 70,
-  },
-  NYLON: {
-    tempMin: 20,
-    tempMax: 30,
-    humMin: 20,
-    humMax: 40,
-    lightMax: 3000,
-    soundMaxDB: 70,
-  },
-  TPU: {
-    tempMin: 20,
-    tempMax: 25,
-    humMin: 30,
-    humMax: 50,
-    lightMax: 3000,
-    soundMaxDB: 70,
-  },
+// Perfis iguais aos do firmware (constante PERFIS em PrintSafe.ino).
+// Se mudar um valor lá, mude aqui também.
+export const PERFIS = {
+  PLA: { tempSecagem: 50, tempArmazenamento: 28, umidadeAlvo: 20 },
+  PETG: { tempSecagem: 65, tempArmazenamento: 30, umidadeAlvo: 15 },
+  ABS: { tempSecagem: 70, tempArmazenamento: 40, umidadeAlvo: 10 },
+  NYLON: { tempSecagem: 80, tempArmazenamento: 45, umidadeAlvo: 10 },
+  TPU: { tempSecagem: 50, tempArmazenamento: 25, umidadeAlvo: 20 },
 };
+
+// Mesmas folgas que o firmware usa para ligar a ventoinha:
+// temperatura acima do setpoint + 3 °C ou umidade acima do alvo + 5 p.p.
+export const FOLGA_TEMP = 3;
+export const FOLGA_UMID = 5;
 
 export function materialKey(sensor) {
   if (!sensor) return "PLA";
